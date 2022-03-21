@@ -1,19 +1,18 @@
 /* eslint-disable  */
 import React,{useState} from 'react'
 import MainPageLayout from '../components/MainPageLayout'
+import {apiGet} from '../misc/config.js'
 
 const Home = () => {
 
   const [input,setInput] = useState("");
+  const [results,setResults] = useState(null)
 
   const onSearch = ()=>{
-    let url = `https://api.tvmaze.com/search/shows?q=${input}`;
-    fetch(url).then((response)=>{
-      console.log(response)
-      return response.json()
-    }).then(result => {
-      console.log(result)
+    apiGet(`search/shows?q=${input}`).then(result =>{
+      setResults(result)
     })
+    
   }
 
   const onInputChange = (ev)=>{
@@ -28,7 +27,22 @@ const Home = () => {
   }
 
 
+  const renderResults = () => {
+    if(results && results.length===0){
+      return (<div>NO results</div>);
+    }
 
+    if(results && results.length>0){
+      return (  
+      <div>
+        {results.map((item)=>{
+          return(<div key={item.show.id}>{item.show.name}</div>);
+        })
+        }
+      </div>);
+    }
+    return null;
+  }
 
   // onKeyDown event is initialted when ever the any key on the keyboard is pressed
 
@@ -37,6 +51,10 @@ const Home = () => {
       <MainPageLayout>
         <input type="text" onChange={onInputChange} value={input} onKeyDown={onKeyDownfunc} /> 
         <button type='button' onClick={onSearch}>Search</button>
+        <div>
+        {renderResults()}
+        </div>
+        
       </MainPageLayout>
   )
 }
