@@ -1,6 +1,10 @@
 /* eslint-disable */
 import React from 'react'
 import { CastList } from './Cast.styled';
+import IMG_PLACEHOLDER from "../../images/not-found.png"
+
+
+
 
 const Cast = ({ cast }) => {
   return (
