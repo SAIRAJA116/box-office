@@ -1,15 +1,41 @@
 /* eslint-disable */
-import React,{useEffect,useState} from 'react'
+import React,{useEffect,useReducer} from 'react'
 import {useParams} from "react-router-dom"
 import { apiGet } from '../misc/config'
 
 
+ 
+
+const reducer = (prevState,action ) => {
+    switch(action.type){
+
+        case "FETCH_SUCCESS": {
+            return { error : null, isLoading:false, show:action.show  }
+        }
+        case 'FETCH_FAILED': {
+            return {...prevState,isLoading : false,error: action.error}
+        }
+
+        default: return prevState
+    }
+}
+
+const initialState = {
+    show : null,
+    isLoading : true,
+    error : null
+}
+
 const Show = () => {
 
     const {id} = useParams()
-    const [show,setShow] = useState(null)
-    const [isLoading,setIsLoding] = useState(true)
-    const [error,setError] = useState("")
+
+    const [{show,isLoading,error},dispatch ] = useReducer(reducer,initialState)
+
+
+    // const [show,setShow] = useState(null)
+    // const [isLoading,setIsLoding] = useState(true)
+    // const [error,setError] = useState("")
 
     useEffect( ()=> {
 
@@ -17,20 +43,15 @@ const Show = () => {
 
 
         apiGet(`shows/${id}?embed[]=seasons&embed[]=cast`).then(results=>{
-            
-            setTimeout(()=>{
-                if(isMounted){
-                    setShow(results);
-                    setIsLoding(false);
-                }
-                
-            },3000)
+            if(isMounted){
+                dispatch({type:"FETCH_SUCCESS",show:results})  
+            }
+
 
             
         }).catch(err => {
             if(isMounted){
-                setError(err.message);
-                setIsLoding(flase);
+                dispatch({type:"FETCH_FAILED",error:err.message})
             }
             
         })
@@ -41,14 +62,14 @@ const Show = () => {
 
     },[id])
     
-    console.log(show)
+
 
     if(isLoading){
         return (<div>Data is being loaded</div>);
     }
 
     if(error){
-        return (<div>{error }</div>)
+        return (<div>{error}</div>)
     }
 
     return (
