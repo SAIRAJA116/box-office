@@ -29,7 +29,7 @@ const ShowGrid = ({data}) => {
             return <ShowCard onStarClick={onStarClick}
             key={show.id} 
             id={show.id} 
-            name={show.id} 
+            name={show.name} 
             image={show.image?show.image.medium:IMAGE_NOT_FOUND} 
             summary={show.summary}
             isStarred = {isStarred} />
